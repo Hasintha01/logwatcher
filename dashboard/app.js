@@ -12,10 +12,31 @@ async function fetchAlerts() {
         const data = await response.json();
         const alertsList = document.getElementById('alerts-list');
         alertsList.innerHTML = '';
-        // Add each alert as a list item
+        if (data.alerts.length === 0) {
+            // Show message if no alerts
+            const li = document.createElement('li');
+            li.textContent = 'No alerts detected.';
+            li.className = 'no-alerts';
+            alertsList.appendChild(li);
+            return;
+        }
+
+        // Add each alert as a list item with severity color and icon
         data.alerts.forEach(alert => {
             const li = document.createElement('li');
-            li.textContent = alert;
+            // Extract severity from alert string
+            let severity = 'info';
+            if (alert.includes('[Critical]')) severity = 'critical';
+            else if (alert.includes('[Warning]')) severity = 'warning';
+
+            // Add icon based on severity
+            let icon = '';
+            if (severity === 'critical') icon = '❗';
+            else if (severity === 'warning') icon = '⚠️';
+            else icon = 'ℹ️';
+
+            li.innerHTML = `<span class="icon">${icon}</span> <span class="${severity}">${alert}</span>`;
+            li.className = severity;
             alertsList.appendChild(li);
         });
     } catch (error) {

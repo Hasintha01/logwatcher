@@ -6,13 +6,15 @@ body {
 }
 h1 {
     color: #333;
+    text-align: center;
+    margin-bottom: 30px;
 }
 #alerts-container {
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     padding: 20px;
-    max-width: 600px;
+    max-width: 700px;
     margin: 20px auto;
 }
 #alerts-list {
@@ -20,10 +22,33 @@ h1 {
     padding: 0;
 }
 #alerts-list li {
-    padding: 10px;
+    padding: 14px 10px;
     border-bottom: 1px solid #eee;
     color: #444;
+    display: flex;
+    align-items: center;
+    font-size: 1.08em;
 }
 #alerts-list li:last-child {
     border-bottom: none;
+}
+.icon {
+    margin-right: 10px;
+    font-size: 1.2em;
+}
+.critical {
+    color: #d32f2f;
+    font-weight: bold;
+}
+.warning {
+    color: #fbc02d;
+    font-weight: bold;
+}
+.info {
+    color: #1976d2;
+}
+.no-alerts {
+    color: #888;
+    text-align: center;
+    font-style: italic;
 }
