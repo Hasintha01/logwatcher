@@ -1,0 +1,29 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+h1 {
+    color: #333;
+}
+#alerts-container {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 20px;
+    max-width: 600px;
+    margin: 20px auto;
+}
+#alerts-list {
+    list-style: none;
+    padding: 0;
+}
+#alerts-list li {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    color: #444;
+}
+#alerts-list li:last-child {
+    border-bottom: none;
+}
