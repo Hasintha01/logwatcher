@@ -1,10 +1,10 @@
 
 # Import required modules
-from flask import Flask, jsonify  # Flask for web server, jsonify for API responses
+from flask import Flask, jsonify, send_from_directory  # Flask for web server, jsonify for API responses, send_from_directory for static files
 import os  # OS for file path operations
 
 # Initialize Flask app
-app = Flask(__name__)
+app = Flask(__name__, static_folder='dashboard')
 
 # Path to the alerts log file
 ALERTS_LOG = os.path.join('alerts', 'alerts.log')
@@ -22,13 +22,21 @@ def get_alerts():
                 alerts.append(line.strip())  # Remove newline characters
     return jsonify({'alerts': alerts})
 
-# Root endpoint for basic status/info
+# Serve the dashboard index.html at root
 @app.route('/')
-def index():
+def serve_dashboard():
     """
-    Simple status message for backend root.
+    Serves the dashboard frontend HTML file.
     """
-    return "LogWatcher Dashboard Backend is running. Connect your frontend to /api/alerts."
+    return send_from_directory(app.static_folder, 'index.html')
+
+# Serve other static files (CSS, JS)
+@app.route('/<path:filename>')
+def serve_static(filename):
+    """
+    Serves static files (CSS, JS) for the dashboard frontend.
+    """
+    return send_from_directory(app.static_folder, filename)
 
 # Run the Flask app (development mode)
 if __name__ == '__main__':
