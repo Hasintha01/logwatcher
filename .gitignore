@@ -1,0 +1,31 @@
+# Ignore system and user folders
+../../*
+# Ignore common OS files
+*.DS_Store
+Thumbs.db
+# Ignore Python cache and environment
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+# Ignore log files
+*.log
+# Ignore VS Code settings
+.vscode/
+# Ignore screenshots
+screenshots/
+# Ignore other folders not part of the project
+3D Objects/
+AppData/
+Contacts/
+Documents/
+Downloads/
+Favorites/
+Music/
+OneDrive/
+Pictures/
+Saved Games/
+Searches/
+Videos/

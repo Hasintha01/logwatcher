@@ -1,0 +1,23 @@
+{
+  "log_files": ["logs/system.log"],
+  "keywords": {
+    "ERROR": "Critical",
+    "CRITICAL": "Critical",
+    "FAILURE": "Warning",
+    "WARNING": "Warning"
+  },
+  "alert_methods": ["console"],
+  "email": {
+    "enabled": false,
+    "to": "",
+    "from": "",
+    "smtp_server": "",
+    "smtp_port": 587,
+    "username": "",
+    "password": ""
+  },
+  "slack": {
+    "enabled": false,
+    "webhook_url": ""
+  }
+}
