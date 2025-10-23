@@ -1,3 +1,38 @@
+# Timestamp and summary styling
+.meta {
+    font-size: 0.95em;
+    color: #b0c4de;
+    margin-right: 16px;
+    min-width: 140px;
+    font-family: 'Consolas', 'Menlo', monospace;
+}
+.summary {
+    flex: 1;
+    font-weight: 500;
+    color: #e6eefb;
+}
+.expand-btn {
+    background: none;
+    border: none;
+    color: #b0c4de;
+    font-size: 1.1em;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: color 0.2s;
+}
+.expand-btn:hover {
+    color: var(--iso-accent);
+}
+.details {
+    background: rgba(11,37,69,0.12);
+    color: #e6eefb;
+    font-size: 0.98em;
+    margin-top: 8px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(2,6,23,0.08);
+    font-family: 'Consolas', 'Menlo', monospace;
+}
 /* Color palette and UI styles
    Primary: deep blue, Secondary: gray, Accent: red/yellow for severities
 */
