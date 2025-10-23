@@ -13,12 +13,21 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Main header -->
-    <h1>LogWatcher Alerts Dashboard</h1>
-    <!-- Container for alerts list -->
-    <div id="alerts-container">
+    <!-- Top navigation  -->
+    <header class="topbar">
+        <div class="brand">
+            <div class="iso-badge">ISO</div>
+            <h1>LogWatcher</h1>
+        </div>
+        <div class="controls">
+            <input id="filter-input" placeholder="Filter by keyword or severity..." />
+        </div>
+    </header>
+
+    <!-- Main content: alerts list -->
+    <main id="alerts-container">
         <ul id="alerts-list"></ul>
-    </div>
+    </main>
     <!-- Link to external JS for fetching and displaying alerts -->
     <script src="app.js"></script>
 </body>
