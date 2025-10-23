@@ -21,13 +21,22 @@ async function fetchAlerts() {
             return;
         }
 
-        // Add each alert as a list item with severity color and icon
-        data.alerts.forEach(alert => {
+        // Add each alert as a list item with timestamp, severity color, icon, and expandable details
+        data.alerts.forEach((alert, idx) => {
             const li = document.createElement('li');
-            // Extract severity from alert string
-            let severity = 'info';
-            if (alert.includes('[Critical]')) severity = 'critical';
-            else if (alert.includes('[Warning]')) severity = 'warning';
+            // Extract timestamp, severity, and message from alert string
+            // Example: [2025-10-22 16:30:00] [Critical] logs/system.log:101 ERROR: Disk space critically low
+            const match = alert.match(/^\[(.*?)\]\s*\[(.*?)\]\s*(.*)$/);
+            let timestamp = '', severity = 'info', details = alert;
+            if (match) {
+                timestamp = match[1];
+                severity = match[2].toLowerCase();
+                details = match[3];
+            } else {
+                // fallback for old format
+                if (alert.includes('[Critical]')) severity = 'critical';
+                else if (alert.includes('[Warning]')) severity = 'warning';
+            }
 
             // Add icon based on severity
             let icon = '';
@@ -35,8 +44,29 @@ async function fetchAlerts() {
             else if (severity === 'warning') icon = '⚠️';
             else icon = 'ℹ️';
 
-            li.innerHTML = `<span class="icon">${icon}</span> <span class="${severity}">${alert}</span>`;
+            // Main row: icon, timestamp, summary, expand/collapse button
             li.className = severity;
+            li.innerHTML = `
+                <span class="icon">${icon}</span>
+                <span class="meta">${timestamp}</span>
+                <span class="summary">${details.split(':')[2] ? details.split(':')[2] : details}</span>
+                <button class="expand-btn" aria-label="Show details">&#x25BC;</button>
+                <div class="details" style="display:none;">${details}</div>
+            `;
+
+            // Expand/collapse logic
+            const btn = li.querySelector('.expand-btn');
+            const detailsDiv = li.querySelector('.details');
+            btn.addEventListener('click', () => {
+                if (detailsDiv.style.display === 'none') {
+                    detailsDiv.style.display = 'block';
+                    btn.innerHTML = '&#x25B2;'; // up arrow
+                } else {
+                    detailsDiv.style.display = 'none';
+                    btn.innerHTML = '&#x25BC;'; // down arrow
+                }
+            });
+
             alertsList.appendChild(li);
         });
     } catch (error) {
