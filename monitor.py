@@ -148,9 +148,30 @@ def count_file_lines(filepath):
     return count
 
 
+def get_file_id(filepath):
+    """
+    Get a unique identifier for a file to detect rotation.
+    On Windows, uses file index. On Unix, uses inode.
+    
+    Args:
+        filepath (str): Path to the file
+        
+    Returns:
+        tuple: (device, inode/index, size) or None if file doesn't exist
+    """
+    try:
+        stat_info = os.stat(filepath)
+        # On Windows, st_ino might be 0, so we use a combination of indicators
+        # On Unix systems, st_ino is the inode number
+        return (stat_info.st_dev, stat_info.st_ino, stat_info.st_size)
+    except (OSError, FileNotFoundError):
+        return None
+
+
 def monitor_file(filepath, keywords, alert_methods):
     """
     Monitor a log file for new lines containing alert keywords.
+    Handles log rotation and truncation by detecting file changes.
     
     Args:
         filepath (str): Path to the log file to monitor
@@ -161,22 +182,81 @@ def monitor_file(filepath, keywords, alert_methods):
     
     logger.info(f"Starting to monitor: {filepath}")
     
+    file_handle = None
+    current_file_id = None
+    last_position = 0
+    lineno = 0
+    
     try:
-        # Count initial lines safely
-        lineno = count_file_lines(filepath)
-        logger.debug(f"Starting at line {lineno} in {filepath}")
-        
-        with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
-            # Seek to end of file to avoid processing old logs
-            f.seek(0, os.SEEK_END)
+        while not shutdown_requested:
+            # Check if file exists and get its ID
+            new_file_id = get_file_id(filepath)
             
-            while not shutdown_requested:
-                line = f.readline()
+            # Detect file rotation or truncation
+            if new_file_id is None:
+                # File doesn't exist (yet or anymore)
+                if file_handle:
+                    file_handle.close()
+                    file_handle = None
+                    logger.warning(f"Log file disappeared: {filepath}. Waiting for it to reappear...")
+                time.sleep(1)
+                continue
+            
+            # Check if file was rotated (different inode/index) or truncated (smaller size)
+            file_rotated = False
+            file_truncated = False
+            
+            if current_file_id is None:
+                # First time opening the file
+                file_rotated = True
+                logger.info(f"Opening log file: {filepath}")
+            elif new_file_id[0:2] != current_file_id[0:2]:
+                # Different device or inode - file was rotated
+                file_rotated = True
+                logger.info(f"Log rotation detected for {filepath}. Reopening file...")
+            elif new_file_id[2] < current_file_id[2]:
+                # File size decreased - file was truncated
+                file_truncated = True
+                logger.info(f"Log truncation detected for {filepath}. Reopening file...")
+            
+            # Reopen file if rotated or truncated
+            if file_rotated or file_truncated:
+                if file_handle:
+                    file_handle.close()
+                
+                try:
+                    file_handle = open(filepath, 'r', encoding='utf-8', errors='ignore')
+                    current_file_id = new_file_id
+                    
+                    if file_rotated:
+                        # For rotated files, seek to end to avoid reprocessing
+                        file_handle.seek(0, os.SEEK_END)
+                        last_position = file_handle.tell()
+                        lineno = count_file_lines(filepath)
+                        logger.debug(f"Seeked to end of file (line {lineno})")
+                    else:
+                        # For truncated files, start from beginning
+                        file_handle.seek(0)
+                        last_position = 0
+                        lineno = 0
+                        logger.debug(f"Reset to beginning of truncated file")
+                        
+                except Exception as e:
+                    logger.error(f"Error opening {filepath}: {e}")
+                    time.sleep(1)
+                    continue
+            
+            # Read new lines
+            if file_handle:
+                line = file_handle.readline()
+                
                 if not line:
+                    # No new data, wait and check for rotation
                     time.sleep(0.5)
                     continue
                 
                 lineno += 1
+                last_position = file_handle.tell()
                 
                 # Check for keywords
                 for keyword, severity in keywords.items():
@@ -193,11 +273,13 @@ def monitor_file(filepath, keywords, alert_methods):
                         # Only alert once per line (break after first keyword match)
                         break
                         
-    except FileNotFoundError:
-        logger.error(f"Log file not found: {filepath}")
+    except KeyboardInterrupt:
+        logger.info("Keyboard interrupt received")
     except Exception as e:
         logger.error(f"Error monitoring {filepath}: {e}")
     finally:
+        if file_handle:
+            file_handle.close()
         logger.info(f"Stopped monitoring: {filepath}")
 
 

@@ -20,6 +20,7 @@ A lightweight Python tool that watches your log files in real-time and alerts yo
 - 🎨 Optional Flask web dashboard
 - 🛡️ Graceful shutdown and error handling
 - ⚙️ Config validation with sensible defaults
+- 🔄 **Log rotation & truncation detection** - automatically handles rotated/truncated logs
 
 ## Quick Start
 
@@ -88,6 +89,30 @@ logwatcher/
 ├── dashboard.py       # Web dashboard
 └── requirements.txt   # Dependencies
 ```
+
+## Log Rotation & Truncation Support
+
+LogWatcher automatically handles log rotation and truncation:
+
+**What it detects:**
+- ✅ **File rotation** - when logs are renamed and a new file is created (e.g., `app.log` → `app.log.1`)
+- ✅ **File truncation** - when logs are cleared/truncated
+- ✅ **File deletion** - waits for file to reappear
+
+**How it works:**
+1. Monitors file inode/index and size
+2. Detects when file changes
+3. Automatically reopens and continues monitoring
+4. Logs rotation events for transparency
+
+**Example:**
+```
+2025-11-07 10:30:00 - monitor - INFO - Starting to monitor: logs/app.log
+2025-11-07 12:00:00 - monitor - INFO - Log rotation detected for logs/app.log. Reopening file...
+2025-11-07 12:00:01 - monitor - INFO - Seeked to end of file (line 0)
+```
+
+This means you can use LogWatcher with **logrotate**, Windows log rotation, or any log management tool without interruption!
 
 ## Troubleshooting
 
