@@ -1,33 +1,211 @@
-<!--
-    LogWatcher Dashboard Frontend
-    Displays alerts fetched from the Flask backend API.
-    index.html
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LogWatcher Dashboard</title>
-    <!-- Link to external CSS for styling -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Top navigation  -->
-    <header class="topbar">
+    <!-- Top Navigation Bar -->
+    <header class="top-nav">
         <div class="brand">
-            <h1>LogWatcher</h1>
+            <h1>🔍 LogWatcher</h1>
         </div>
-        <div class="controls">
-            <input id="filter-input" placeholder="Filter by keyword or severity..." />
+        <div class="search-container">
+            <input 
+                id="global-search" 
+                type="text" 
+                placeholder="Search logs and alerts..." 
+                autocomplete="off"
+            />
+        </div>
+        <div class="nav-actions">
+            <button id="settings-btn" class="icon-btn" title="Settings">⚙️</button>
         </div>
     </header>
 
-    <!-- Main content: alerts list -->
-    <main id="alerts-container">
-        <ul id="alerts-list"></ul>
-    </main>
-    <!-- Link to external JS for fetching and displaying alerts -->
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <nav>
+                <a href="#" class="nav-item active" data-page="dashboard">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-page="alerts">
+                    <span class="nav-icon">🚨</span>
+                    <span class="nav-label">Alerts</span>
+                </a>
+                <a href="#" class="nav-item" data-page="config">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-label">Configuration</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Dashboard Page -->
+            <div id="page-dashboard" class="page active">
+                <div class="page-header">
+                    <h2>Live Monitor</h2>
+                    <div class="status-badge active">
+                        <span class="status-dot"></span>
+                        <span>Monitoring Active</span>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div class="controls-bar">
+                    <div class="control-group">
+                        <button id="pause-btn" class="btn btn-secondary">
+                            <span id="pause-icon">⏸️</span>
+                            <span id="pause-text">Pause</span>
+                        </button>
+                        <label class="toggle-label">
+                            <input type="checkbox" id="auto-scroll" checked>
+                            <span>Auto-scroll</span>
+                        </label>
+                    </div>
+                    <div class="filter-group">
+                        <button class="filter-btn active" data-severity="all">All</button>
+                        <button class="filter-btn" data-severity="critical">🔴 Critical</button>
+                        <button class="filter-btn" data-severity="warning">🟠 Warning</button>
+                        <button class="filter-btn" data-severity="info">⚪ Info</button>
+                    </div>
+                    <div class="search-group">
+                        <input 
+                            id="live-search" 
+                            type="text" 
+                            placeholder="Filter logs..." 
+                            autocomplete="off"
+                        />
+                    </div>
+                </div>
+
+                <!-- Live Log Stream -->
+                <div class="log-stream" id="log-stream">
+                    <div class="log-entry info">
+                        <span class="log-time">--:--:--</span>
+                        <span class="log-severity">INFO</span>
+                        <span class="log-message">Waiting for log data...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts Page -->
+            <div id="page-alerts" class="page">
+                <div class="page-header">
+                    <h2>Alert History</h2>
+                    <button id="export-csv" class="btn btn-primary">📥 Export CSV</button>
+                </div>
+
+                <!-- Alert Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card critical">
+                        <div class="stat-value" id="stat-critical">0</div>
+                        <div class="stat-label">Critical</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-value" id="stat-warning">0</div>
+                        <div class="stat-label">Warnings</div>
+                    </div>
+                    <div class="stat-card info">
+                        <div class="stat-value" id="stat-info">0</div>
+                        <div class="stat-label">Info</div>
+                    </div>
+                    <div class="stat-card total">
+                        <div class="stat-value" id="stat-total">0</div>
+                        <div class="stat-label">Total Alerts</div>
+                    </div>
+                </div>
+
+                <!-- Alerts Table -->
+                <div class="table-container">
+                    <table class="alerts-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Severity</th>
+                                <th>Source</th>
+                                <th>Message</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alerts-table-body">
+                            <tr class="no-data">
+                                <td colspan="4">No alerts yet</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Configuration Page -->
+            <div id="page-config" class="page">
+                <div class="page-header">
+                    <h2>Configuration</h2>
+                    <button id="save-config" class="btn btn-primary">💾 Save Changes</button>
+                </div>
+
+                <div class="config-section">
+                    <h3>Monitored Log Files</h3>
+                    <div id="log-files-list" class="config-list"></div>
+                    <button id="add-log-file" class="btn btn-secondary">+ Add Log File</button>
+                </div>
+
+                <div class="config-section">
+                    <h3>Keywords & Severity Mapping</h3>
+                    <div id="keywords-list" class="config-list"></div>
+                    <button id="add-keyword" class="btn btn-secondary">+ Add Keyword</button>
+                </div>
+
+                <div class="config-section">
+                    <h3>Alert Methods</h3>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="alert-console" checked>
+                            <span>Console Output</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" id="alert-email">
+                            <span>Email Notifications</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" id="alert-slack">
+                            <span>Slack Integration</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3>Dashboard Settings</h3>
+                    <div class="form-group">
+                        <label>Refresh Interval (seconds)</label>
+                        <input type="number" id="refresh-interval" value="5" min="1" max="60">
+                    </div>
+                    <div class="form-group">
+                        <label>Max Log Entries</label>
+                        <input type="number" id="max-entries" value="100" min="10" max="1000">
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer Status Bar -->
+    <footer class="status-bar">
+        <div class="status-left">
+            <span id="monitor-status">Status: Watching <span id="current-log">logs/system.log</span></span>
+        </div>
+        <div class="status-right">
+            <span class="status-indicator active">
+                <span class="pulse-dot"></span>
+                <span id="connection-status">Active</span>
+            </span>
+        </div>
+    </footer>
+
     <script src="app.js"></script>
 </body>
 </html>
