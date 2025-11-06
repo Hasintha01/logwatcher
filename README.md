@@ -54,9 +54,27 @@ Edit `config/config.json`:
     "ERROR": "Critical",
     "WARNING": "Warning"
   },
-  "alert_methods": ["console"]
+  "alert_methods": ["console"],
+  "dashboard": {
+    "host": "127.0.0.1",
+    "port": 5000,
+    "debug": false
+  }
 }
 ```
+
+**Configuration options:**
+- `log_files`: Array of log file paths to monitor
+- `keywords`: Map keywords to severity levels (Info, Warning, Critical)
+- `alert_methods`: Alert types (console, email, slack)
+- `dashboard.debug`: Enable Flask debug mode (false for production)
+- `dashboard.host`: Dashboard host (default: 127.0.0.1)
+- `dashboard.port`: Dashboard port (default: 5000)
+
+**Environment variables** (override config):
+- `FLASK_DEBUG=1` - Enable debug mode
+- `FLASK_HOST=0.0.0.0` - Change host
+- `FLASK_PORT=8080` - Change port
 
 ## Folder Structure
 ```

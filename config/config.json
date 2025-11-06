@@ -7,6 +7,11 @@
     "WARNING": "Warning"
   },
   "alert_methods": ["console"],
+  "dashboard": {
+    "host": "127.0.0.1",
+    "port": 5000,
+    "debug": false
+  },
   "email": {
     "enabled": false,
     "to": "",
