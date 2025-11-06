@@ -1,0 +1,11 @@
+# LogWatcher Dependencies
+
+# Web framework for dashboard
+Flask==3.0.0
+
+# WSGI server for production deployment (optional but recommended)
+Waitress==3.0.0
+
+# For future email alert support
+# Uncomment when implementing email alerts
+# python-dotenv==1.0.0

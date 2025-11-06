@@ -1,32 +1,96 @@
 # LogWatcher
 
-Automated Log Monitoring & Alert System
+**Automated Log Monitoring & Alert System**
+
+A lightweight Python tool that watches your log files in real-time and alerts you when specific keywords (like "ERROR", "CRITICAL") appear. Stop manually checking logs—get instant notifications when issues occur.
+
+## What It Does
+
+1. Monitors log files continuously for new entries
+2. Detects keywords you configure (errors, warnings, etc.)
+3. Alerts you instantly (console, email, or Slack)
+4. Logs all alerts to `alerts/alerts.log` for review
+5. Optional web dashboard to visualize alerts
 
 ## Features
-- Real-time log monitoring
-- Pattern-based detection (configurable via `config/config.json`)
-- Console, email, or Slack alerting
-- Incident logging to `alerts/alerts.log`
-- Severity classification (Info, Warning, Critical)
-- Lightweight deployment
-- Optional Flask dashboard for alert visualization
+- ⚡ Real-time log monitoring with minimal resource usage
+- 🎯 Pattern-based keyword detection (configurable)
+- 🔔 Multiple alert methods: console, email, Slack
+- 📝 Automatic incident logging
+- 🎨 Optional Flask web dashboard
+- 🛡️ Graceful shutdown and error handling
+- ⚙️ Config validation with sensible defaults
 
 ## Quick Start
-1. Edit `config/config.json` to set log files and alert preferences.
-2. Run `python monitor.py` to start monitoring.
-3. (Optional) Use `deploy.sh` for quick demo.
+
+```bash
+# 1. Create virtual environment
+python -m venv .venv
+.venv\Scripts\Activate.ps1  # Windows PowerShell
+# source .venv/bin/activate  # Linux/Mac
+
+# 2. Install dependencies
+pip install -r requirements.txt
+
+# 3. Configure (edit config/config.json)
+# Set your log files and keywords
+
+# 4. Start monitoring
+python monitor.py
+
+# 5. (Optional) View dashboard
+python dashboard.py
+# Open http://localhost:5000
+```
+
+## Configuration
+
+Edit `config/config.json`:
+
+```json
+{
+  "log_files": ["logs/system.log"],
+  "keywords": {
+    "ERROR": "Critical",
+    "WARNING": "Warning"
+  },
+  "alert_methods": ["console"]
+}
+```
 
 ## Folder Structure
 ```
 logwatcher/
-├── logs/
-│   └── system.log
-├── alerts/
-│   └── alerts.log
-├── config/
+├── logs/              # Log files to monitor
+├── alerts/            # Generated alerts
+├── config/            # Configuration
 │   └── config.json
-├── monitor.py
-├── README.md
-├── deploy.sh
-└── screenshots/
+├── dashboard/         # Web UI files
+├── monitor.py         # Main monitoring script
+├── dashboard.py       # Web dashboard
+└── requirements.txt   # Dependencies
 ```
+
+## Troubleshooting
+
+**Virtual environment issues (Windows)**
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+**Module not found**
+- Activate virtual environment first
+- Run: `pip install -r requirements.txt`
+
+**Log file not found**
+- Check paths in `config/config.json` are correct
+- Use absolute or relative paths from project root
+
+## Requirements
+
+- Python 3.7+
+- Flask 3.0.0 (see `requirements.txt`)
+
+---
+
+**License:** MIT | **Contributing:** Pull requests welcome!
