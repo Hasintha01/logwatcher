@@ -17,10 +17,11 @@ A lightweight Python tool that watches your log files in real-time and alerts yo
 - 🎯 Pattern-based keyword detection (configurable)
 - 🔔 Multiple alert methods: console, email, Slack
 - 📝 Automatic incident logging
-- 🎨 Optional Flask web dashboard
+- 🎨 Optional Flask web dashboard with **real-time filtering**
 - 🛡️ Graceful shutdown and error handling
 - ⚙️ Config validation with sensible defaults
 - 🔄 **Log rotation & truncation detection** - automatically handles rotated/truncated logs
+- 🔍 **Search & filter** - instant search with text highlighting (300ms debounce)
 
 ## Quick Start
 
